@@ -71,8 +71,8 @@ if __name__ == '__main__':
             r1, x1, U1, V1 = load_jaime(method, ct)
             r2, x2, U2, V2 = load_inga(method, ct)
             data = (U1 - U2[:-1, 498:]).T
-            axes[i].imshow(data, extent=[0, 10, 0, 3], origin='lower', interpolation='bilinear', cmap='coolwarm', vmin=-0.6, vmax=0.6)
-            axes[i].imshow(data, extent=[0, 10, 0, -3], origin='lower', interpolation='bilinear', cmap='coolwarm', vmin=-0.6, vmax=0.6)
+            axes[i].imshow(data, extent=[0, 10, 0, 3], origin='lower', interpolation='bilinear', cmap='RdBu', vmin=-0.6, vmax=0.6)
+            axes[i].imshow(data, extent=[0, 10, 0, -3], origin='lower', interpolation='bilinear', cmap='RdBu', vmin=-0.6, vmax=0.6)
             axes[i].text(.5, .85, f'{method} $C_T={ct}$',
                 horizontalalignment='center', transform=axes[i].transAxes)
             axes[i].set_ylabel('$r/R$')
