@@ -50,7 +50,7 @@ if __name__ == '__main__':
                 
                 
             r, x, U, V = load_inga(method, ct)
-            axes[i, 1].imshow(U.T, extent=[min(x), max(x), min(r), max(r)], origin='lower',                 interpolation='bilinear', vmin=0, vmax=1)
+            axes[i, 1].imshow(U.T, extent=[min(x), max(x), min(r), max(r)], origin='lower', interpolation='bilinear', vmin=0, vmax=1)
             axes[i, 1].text(.5, .85, f'{method} $C_T={ct}$',
                 horizontalalignment='center', transform=axes[i, 1].transAxes)
                 
@@ -70,10 +70,11 @@ if __name__ == '__main__':
             axes[i].set_ylim(-3, 3)
             r1, x1, U1, V1 = load_jaime(method, ct)
             r2, x2, U2, V2 = load_inga(method, ct)
-            data = (U1 - U2[:-1, 498:]).T
-            axes[i].imshow(data, extent=[0, 10, 0, 3], origin='lower', interpolation='bilinear', cmap='RdBu', vmin=-0.6, vmax=0.6)
-            axes[i].imshow(data, extent=[0, 10, 0, -3], origin='lower', interpolation='bilinear', cmap='RdBu', vmin=-0.6, vmax=0.6)
-            axes[i].text(.5, .85, f'{method} $C_T={ct}$',
+            difference = (U1 - U2[:-1, 498:]).T
+            error = np.sqrt((difference**2).mean())
+            axes[i].imshow(difference, extent=[0, 10, 0, 3], origin='lower', interpolation='bilinear', cmap='RdBu', vmin=-0.6, vmax=0.6)
+            axes[i].imshow(difference, extent=[0, 10, 0, -3], origin='lower', interpolation='bilinear', cmap='RdBu', vmin=-0.6, vmax=0.6)
+            axes[i].text(.5, .8, f'{method} $C_T={ct}$\n$\epsilon={error:2.4f}$',
                 horizontalalignment='center', transform=axes[i].transAxes)
             axes[i].set_ylabel('$r/R$')
 
