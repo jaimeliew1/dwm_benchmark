@@ -9,12 +9,15 @@ input_files = {
     0.9: 'induction_input_files/induction_ct0.9.csv',
 }
 
-methods = ['IEC', 'madsen', 'keck']
-
+methods = {
+    'IEC'   : 'IEC',
+    'madsen': 'larsen',
+    'keck'  : 'keck',
+}
 
 if __name__ == '__main__':
-    for method in methods:
-        dwm = DWM(axial_induction_model='userinput', viscosity_method=method, boundary_method=method)
+    for boundary_method, visc_method in methods.items():
+        dwm = DWM(axial_induction_model='userinput', viscosity_method=visc_method, boundary_method=boundary_method)
         
         for i, (ct, fn) in enumerate(input_files.items()):
             # Load boundary condition data.
@@ -25,7 +28,7 @@ if __name__ == '__main__':
             r, x, U, V, widths = dwm.solve(TI=0.1, axial_r=_r, axial_a=a, ct=ct)
             
             # save DWM output to pickle file.
-            with open(f'data_jaime/{method}_ct{ct}.pkl', 'wb') as f:
+            with open(f'data_jaime/{boundary_method}_ct{ct}.pkl', 'wb') as f:
                 pickle.dump(r, f)
                 pickle.dump(x, f)
                 pickle.dump(U, f)
