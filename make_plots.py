@@ -67,6 +67,7 @@ if __name__ == '__main__':
         axes[2].set_xlabel('$x/R$')
         axes[2].set_xlabel('$x/R$')
         for i, ct in enumerate(cts):
+            print(f'making plot for {method}, ct={ct}...')
             axes[i].set_ylim(-3, 3)
             r1, x1, U1, V1 = load_jaime(method, ct)
             r2, x2, U2, V2 = load_inga(method, ct)
