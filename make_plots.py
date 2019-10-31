@@ -2,6 +2,28 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pickle
 
+def rotor_area_mean(r, x):
+    '''
+    Returns the rotor area mean of the quantity, x(r). The rotor mean is defined as
+    the area-weighted average of a quantity x(r), which is a function of radial position.
+    For example, rotor mean wind speed, or rotor mean induction.
+
+    The rotor_area_mean ignores x(r) such that r > 1
+    Args:
+        r (1D array): radial positions (nondimensional)
+        x (1D array): Quantity to be averaged.
+    Returns:
+        rotor_area_mean (float): Rotor area mean of x(r).
+    '''
+
+    assert len(r) == len(x)
+
+    r, x = r[r<=1], x[r<=1]
+    rotor_area_mean = 2*np.trapz(r*x, r)
+    
+    return rotor_area_mean
+    
+    
 methods = ['IEC', 'madsen', 'keck']
 cts = [0.3, 0.6, 0.9]
 
@@ -33,7 +55,7 @@ def load_inga(_method, ct):
     
     
 if __name__ == '__main__':
-    
+    ### Plot flow fields
     for method in methods:
         fig, axes = plt.subplots(3, 2, sharex=True, sharey=True)
         
@@ -59,7 +81,7 @@ if __name__ == '__main__':
         plt.savefig(f'fig/side_by_side_{method}.png', dpi=200, bbox_inches='tight')
             
 
-    
+    ### Plot flow field difference plots
     for method in methods:
         fig, axes = plt.subplots(3, 1, figsize=[4, 8], sharex=True)
                 
@@ -80,8 +102,34 @@ if __name__ == '__main__':
             axes[i].set_ylabel('$r/R$')
 
 
-                
         plt.savefig(f'fig/difference_{method}.png', dpi=200, bbox_inches='tight')
-    plt.show()
+        
+        
+        ### plot rotor effective wind speed ratio
+        fig, axes = plt.subplots(3, 1, figsize=[4, 8], sharex=True)
+        axes[2].set_xlabel('$x/R$')
+        for j, method in enumerate(methods):
+            
+            axes[j].set_xlim(0, 10)
+            axes[j].set_ylim(-5, 5)
+            axes[j].text(.5, .9, f'{method}',
+                horizontalalignment='center', transform=axes[j].transAxes)
+            for i, ct in enumerate(cts):
+                print(f'making plot for {method}, ct={ct}...')
+
+                r1, x1, U1, V1 = load_jaime(method, ct)
+                r2, x2, U2, V2 = load_inga(method, ct)
+                
+                REWS1 = np.array([rotor_area_mean(r1, U1[i, :]) for i in range(len(x1))])
+                REWS2 = np.array([rotor_area_mean(r2[r2>=0], U2[i, r2>=0]) for i in range(len(x2))])
+                ratio = (REWS2[:-1]-REWS1)/REWS1*100
+
+                axes[j].plot(x1, ratio, label=f'$C_T={ct}$')
+                axes[j].set_ylabel('REWS difference [%]')
+                axes[j].grid()
+    
+        axes[2].legend(ncol=3, fontsize = 'x-small', loc='lower center')
+        plt.savefig(f'fig/REWS.png', dpi=200, bbox_inches='tight')
+    #plt.show()
     
     
